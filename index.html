@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        input {
+            margin: 5px;
+            padding: 8px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Age Calculator</h2>
+        <br><br>
+        <label>Birth Date:</label>
+        <input type="date" id="birthDate">
+        <br>
+        <label>Current Date:</label>
+        <input type="date" id="currentDate">
+        <br>
+        <button onclick="calculateAge()">Calculate Age</button>
+        <div id="result"></div>
+        <div id="birthdayCountdown"></div>
+    </div>
+
+    <script>
+        document.getElementById('currentDate').valueAsDate = new Date();
+        document.getElementById('birthDate').value = localStorage.getItem('birthDate') || '';
+
+        function calculateAge() {
+            let birthDate = new Date(document.getElementById('birthDate').value);
+            let currentDate = new Date(document.getElementById('currentDate').value);
+
+            if (isNaN(birthDate) || isNaN(currentDate)) {
+                document.getElementById('result').innerText = "Please enter valid dates.";
+                return;
+            }
+
+            let years = currentDate.getFullYear() - birthDate.getFullYear();
+            let months = currentDate.getMonth() - birthDate.getMonth();
+            let days = currentDate.getDate() - birthDate.getDate();
+            let weeks = Math.floor((currentDate - birthDate) / (1000 * 60 * 60 * 24 * 7));
+
+            if (days < 0) {
+                months--;
+                days += new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            document.getElementById('result').innerText = `Your Age is ${years} years, ${months} months, ${days} days, and ${weeks} weeks.`;
+            calculateBirthdayCountdown(birthDate, currentDate);
+            localStorage.setItem('birthDate', document.getElementById('birthDate').value);
+        }
+
+        function calculateBirthdayCountdown(birthDate, currentDate) {
+            let nextBirthday = new Date(currentDate.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+            if (nextBirthday < currentDate) {
+                nextBirthday.setFullYear(currentDate.getFullYear() + 1);
+            }
+            let daysLeft = Math.ceil((nextBirthday - currentDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('birthdayCountdown').innerText = `🎉 Days until next birthday: ${daysLeft}`;
+        }
+    </script>
+</body>
+</html>
